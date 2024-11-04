@@ -1,0 +1,137 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+df = pd.read_csv('hotel_bookings.csv',delimiter='\t')
+df.head() #first 5 rows along with header
+df.head(10) ## can pass any no.of rows we want to see
+
+df.tail() #Last 5 rows along with header
+df.tail(8) # can pass any no.of rows we want to see 
+
+ import pandas as pd
+df = pd.read_csv('hotel_bookings.csv',delimiter='\t')
+df.shape #size of data no of rows ,no of columns
+
+  import pandas as pd
+df = pd.read_csv('hotel_bookings.csv',delimiter='\t')
+df.columns  # shows the column names in datas6
+
+  import pandas as pd
+df = pd.read_csv('hotel_bookings.csv',delimiter='\t')
+df.info() #all info of a dataset #check data types 
+
+  # there are some data type as object which are categorical to check it we use describe()
+#it can be used to numerical but we are pasing a parameter as to show columns with object data type
+import pandas as pd
+df = pd.read_csv('hotel_bookings.csv',delimiter='\t')
+df.describe(include = 'object')
+#in output we can see the count eg:arrival_date_month shows 12 unique months 
+
+df.isnull() 
+#return data set as falesthe if null value exist if data set is large it an ambiguity so
+
+df.isnull().sum()
+#sum() along with df.isnull() shows count of nulls
+
+df.drop(['company','agent'],axis = 1,inplace = True)
+## Dropping 'company' and 'agent' columns from DataFrame 'df' in place
+# The parameters `axis=1` and `inplace=True` in the code `df.drop(['company', 'agent'],
+# axis=1, inplace=True)` have specific purposes
+
+df.dropna(inplace = True)
+## Removing rows with missing values from DataFrame 'df' in place
+df.isnull().sum()
+
+df['adr'].plot(kind = 'box')
+#we can see outliner easily
+#we have taken adr to remove according to our analysis
+
+cancelled_prec = df['is_canceled'].value_counts(normalize = True)
+print(cancelled_prec)
+
+#visualisations
+# we will plot bar graph because data which we are presenting gives u categorical and
+# we are going to present some count
+plt.figure(figsize = (5,4))
+plt.title('Reservation_Status_Count')
+plt.bar(['Not_canceled','canceled'],df['is_canceled'].value_counts(), edgecolor = 'k', width = 0.7)
+plt.show()
+
+# Replacing 0 with 'not canceled' and 1 with 'canceled' in the 'is_canceled' column
+df['is_canceled'] = df['is_canceled'].replace({0: 'not canceled', 1: 'canceled'})
+
+# Plotting the count of reservation status in different hotels
+plt.figure(figsize=(8, 4))
+ax1 = sns.countplot(x='hotel', hue='is_canceled', data=df, palette='Blues')
+ax1.legend(bbox_to_anchor=(1, 1))
+legend_labels, _ = ax1.get_legend_handles_labels()
+plt.title('Reservation Status in different hotels', size=20)
+
+resort_hotel = df[df['hotel'] == 'Resort Hotel']
+resort_hotel['is_canceled'].value_counts(normalize = True)
+#the code segment identifies the cancellation status distribution (canceled vs. not canceled) 
+# within the bookings specifically categorized as 'Resort Hotel', presenting the percentage or
+# proportion of each cancellation status
+
+City_hotel = df[df['hotel'] == 'City Hotel']
+City_hotel['is_canceled'].value_counts(normalize = True)
+# this code segment identifies the distribution of cancellation statuses (canceled vs. not canceled) 
+# within the bookings categorized specifically as 'City Hotel', presenting the percentage or 
+# proportion of each cancellation status.
+
+# # Creating a visualization to compare the trend of Average Daily Rates between 
+# Resort and City Hotels using matplotlib.pyplot 
+# in a figure of size 20x8 inches with titles and labels
+plt.figure(figsize=(8,6))
+plt.title('Average Daily Rate in City and Resort Hotel',fontsize = 30)
+plt.plot(resort_hotel.index,resort_hotel['adr'], label = 'resort hotel')
+plt.plot(City_hotel.index,City_hotel['adr'], label = 'resort hotel')
+
+# Visualizes the average daily rate per month using Seaborn's barplot based on the calculated mean daily rates grouped by month.
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Calculate average daily rate for each month
+average_daily_rate = df.groupby('month')['adr'].mean().reset_index()
+# Plotting average daily rate for each month with Seaborn
+plt.figure(figsize=(10, 6))
+sns.barplot(x='month', y='adr', data=average_daily_rate,color='skyblue')
+plt.xlabel('Month')
+plt.ylabel('Average Daily Rate')
+plt.title('Average Daily Rate per Month')
+plt.show()
+
+  #Generates a pie chart displaying the top 10 countries with the highest number of canceled reservations from the dataset.
+Cancelled_data = df[df['is_canceled'] == 1]
+top_10_Country = Cancelled_data['country'].value_counts()[:10]
+plt.figure(figsize = (8,8))
+plt.title('Top 10 Countries with reservation cancelled')
+plt.pie(top_10_Country,autopct = '%.2f', labels = top_10_Country.index)
+plt.show()
+
+  #Hotel Proportion
+hotel = df.reset_index().groupby("hotel").aggregate({"hotel": "count"}).rename(columns={'hotel': 'count', 'index': 'hotel'})
+hotel = hotel.sort_values('count', ascending=False).reset_index()
+plt.figure(figsize=(8, 8))
+explode = [0.07,0]
+labels = hotel["hotel"]
+colors = ['blue', 'Red']
+plt.pie(hotel["count"], autopct='%.1f%%', explode=explode, labels=labels, colors=colors)
+plt.title(label=" Type of Hotel", fontsize=16)
+
+ import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Assuming df is your DataFrame and it's already defined
+plt.figure(figsize=(13, 6))
+data4 = df[df["is_canceled"] == 1].reset_index()
+cancellations = data4[["hotel", "is_canceled", "arrival_date_year", "arrival_date_month"]]
+ordered_months = ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December"]
+cancellations.loc[:, "arrival_date_month"] = pd.Categorical(cancellations["arrival_date_month"], categories=ordered_months, ordered=True)
+sns.countplot(x="arrival_date_month", hue="hotel", data=cancellations)
+plt.title(label="Cancellations Each Month", fontsize=15)
+plt.legend(loc="upper right")
+plt.tight_layout()
+plt.show()
+ 
